@@ -65,4 +65,49 @@ filters:
                                 )
 ```
 
+5. Global Filter 사용 (라우팅 마다 다른 기능이 아닌 공통된 기능이 필요할 때 사용하면 편함)
+- GlobalFilter.java 추가
 
+- application.yml 에 default-filters 추가 
+```yaml
+spring:
+  application:
+    name: apigateway-service
+  cloud:
+    gateway:
+      default-filters:
+        - name:
+            args:
+              baseMessage: Spring Cloud Gateway Global Filter
+              preLogger: true
+              postLogger: true
+```
+
+6. Logging Filter 추가 
+- 위의 Custom Filter 를 만드는 거지만
+- OrderedGatewayFilter 를 만들어서 필터의 순서 지정 (델리게이트 패턴)
+
+7. eureka 와 함께 사용
+- localhost:8081 같은 주소의 라우팅 정보를 직접 등록하는 것이 아닌 eureka 에서 마이크로 서비스 이름으로 알아냄  
+
+- eureka 서버에 등록 (api-gateway, first-service, second-service)
+```yaml
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+```
+- application.yml 의 uri 부분 수정
+```yaml
+routes:
+    - id: first-service
+      uri: lb://MY-FIRST-SERVICE
+      ...
+```
+
+8. Load Balancer 로 실행
+- first service 랜덤 포트로 2개 실행
+- second service 랜덤 포트로 2개 실행
+- 실행해 보면 같은 요청이라도 라운드로빈으로 각각 인스턴스가 한 번씩 처리함 

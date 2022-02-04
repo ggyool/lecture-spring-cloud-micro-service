@@ -1,4 +1,4 @@
-#### API Gateway
+#### * API Gateway
 
 클라이언트에서 micro service 로 직접 API를 날리면 변화가 생기면 클라이언트의 코드가 바뀌어야함 <br>
 따라서 단일 진입점 역할을 하는 API Gateway 를 둠 (포록시)
@@ -14,27 +14,27 @@
 - IP 허용 목록에 추가
 
 
-#### Spring Cloud 에서의 MSA 간 통신
+#### * Spring Cloud 에서의 MSA 간 통신
 1. RestTemplate
 2. Feign Client
 
-#### Netflix Ribbon: Client side Load Balancer
+#### * Netflix Ribbon: Client side Load Balancer
 - 서비스 이름으로 호출
 - Health Check
 - 비동기 처리 X
 - 현재 maintenance 상태
 
-#### Netflix Zuul
+#### * Netflix Zuul
 - Routing
 - API gateway
 - 현재 maintenance 상태
 
 
-### 실습
+### * 실습
 #### zuul-service
 
 1. pom.xml 설정
-- zuul을 현재 지원하지 않아서 boot 버전 `2.3.8.RELEASE` 로 수정
+- zuul을 현재 지원하지 않아서 boot 버전 `2.3.8.RELEASE` 로 수정 (2.3.x 까지 가능)
 - maven repository 에서 zuul 의존성 추가하였음
 ```xml
 <dependency>
@@ -64,6 +64,6 @@ zuul:
 first-service 는 8081 포트, second-service 는 8082 포트서 실행 
 
 
-### Zuul Filter 추가
+### * Zuul Filter 추가
 요청 uri 를 로깅하는 용도로 ZuulFilter 를 구현 
 [ZuulLoggingFilter.java 참고](/src/main/java/org/ggyool/zuulservice/filter/ZuulLoggingFilter.java)
