@@ -4,6 +4,15 @@ server:
 spring:
   application:
     name: user-service
+  h2:
+    console:
+      enabled: true
+      settings:
+        web-allow-others: true
+      path: /h2-console
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:testdb
 
 eureka:
   instance:
@@ -13,3 +22,6 @@ eureka:
     fetch-registry: true # eureka 서버로부터 인스턴스들의 정보를 주기적으로 가져올 것인지 여부
     service-url:
       defaultZone: http://127.0.0.1:8761/eureka # eureka 서버에 자신의 존재를 등록
+
+greeting:
+  message: Welcome to the Simple E-commerce.
