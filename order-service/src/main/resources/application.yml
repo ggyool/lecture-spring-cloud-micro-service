@@ -1,0 +1,35 @@
+server:
+  port: 0
+
+spring:
+  application:
+    name: order-service
+  h2:
+    console:
+      enabled: true
+      settings:
+        web-allow-others: true
+      path: /h2-console
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    generate-ddl: true
+#    defer-datasource-initialization: true
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:testdb
+
+eureka:
+  instance:
+    instance-id: ${spring.cloud.client.hostname}:${spring.application.name}:${spring.application.instance_id:${random.value}}
+  client:
+    register-with-eureka: true # registry 에 등록할지 여부
+    fetch-registry: true # eureka 서버로부터 인스턴스들의 정보를 주기적으로 가져올 것인지 여부
+    service-url:
+      defaultZone: http://127.0.0.1:8761/eureka # eureka 서버에 자신의 존재를 등록
+
+logging:
+  level:
+    org.ggyool.orderservice: DEBUG
+
