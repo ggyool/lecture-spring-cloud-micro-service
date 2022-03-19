@@ -4,6 +4,8 @@ import com.ggyool.userservice.dto.UserDto;
 import com.ggyool.userservice.entity.UserEntity;
 import com.ggyool.userservice.entity.UserRepository;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -47,5 +49,20 @@ public class UserServiceImpl implements UserService {
     @Override
     public Iterable<UserEntity> getUserByAll() {
         return userRepository.findAll();
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        UserEntity userEntity = userRepository.findByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return new User(
+                userEntity.getEmail(),
+                userEntity.getEncryptedPwd(),
+                true,
+                true,
+                true,
+                true,
+                Collections.emptyList()
+        );
     }
 }
