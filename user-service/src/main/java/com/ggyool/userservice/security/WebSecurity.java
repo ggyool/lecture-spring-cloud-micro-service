@@ -31,17 +31,16 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable();
+        http.authorizeRequests().antMatchers("/actuator/**").permitAll();
         http.authorizeRequests().antMatchers("/users/**")
-                .hasIpAddress("192.168.0.131")
+                .hasIpAddress("192.168.0.15")
                 .and()
                 .addFilter(getAuthenticationFilter());
         http.headers().frameOptions().disable();
     }
 
     private AuthenticationFilter getAuthenticationFilter() throws Exception {
-        AuthenticationFilter authenticationFilter = new AuthenticationFilter();
-        authenticationFilter.setAuthenticationManager(authenticationManager());
-        return authenticationFilter;
+        return new AuthenticationFilter(authenticationManager(), userService, environment);
     }
 
     // 인증에 관한 configure 메서드

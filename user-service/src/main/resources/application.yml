@@ -13,6 +13,11 @@ spring:
   datasource:
     driver-class-name: org.h2.Driver
     url: jdbc:h2:mem:testdb
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: guest
+    password: guest
 
 eureka:
   instance:
@@ -29,3 +34,16 @@ greeting:
 logging:
   level:
     com.ggyool.userservice: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: refresh, health, beans, busrefresh
+
+# 해당 정보는 config-service 에서 가져옴
+#token:
+#  expiration-time: 86400000
+#  secret: user-sercret
+
+

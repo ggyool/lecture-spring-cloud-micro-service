@@ -1,0 +1,30 @@
+server:
+  port: 8888
+
+spring:
+  application:
+    name: config-service
+  profiles:
+    active: native
+  cloud:
+    config:
+      server:
+        native:
+          # git local repo 를 넣어보니 에러 발생
+          search-locations: file://${user.home}/Practice/online-lecture-microservice-nongit-local-repo
+#        bootstrap: true
+#        git:
+#          uri: file://Users/ggyool/Practice/online-lecture-microservice-local-repo
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: guest
+    password: guest
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, busrefresh
+

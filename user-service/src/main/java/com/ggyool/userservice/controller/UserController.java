@@ -6,8 +6,10 @@ import com.ggyool.userservice.service.UserService;
 import com.ggyool.userservice.vo.Greeting;
 import com.ggyool.userservice.vo.RequestUser;
 import com.ggyool.userservice.vo.ResponseUser;
+import org.apache.http.HttpHeaders;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -28,15 +32,18 @@ public class UserController {
     private final UserService userService;
     private final Greeting greeting;
     private final ModelMapper modelMapper;
+    private final Environment environment;
 
-    public UserController(UserService userService, Greeting greeting, ModelMapper modelMapper) {
+    public UserController(UserService userService, Greeting greeting, ModelMapper modelMapper, Environment environment) {
         this.userService = userService;
         this.greeting = greeting;
         this.modelMapper = modelMapper;
+        this.environment = environment;
     }
 
     @GetMapping("/users")
-    public ResponseEntity<List<ResponseUser>> getUsers() {
+    public ResponseEntity<List<ResponseUser>> getUsers(HttpServletRequest httpServletRequest) {
+        final Enumeration<String> headers = httpServletRequest.getHeaders(HttpHeaders.AUTHORIZATION);
         Iterable<UserEntity> users = userService.getUserByAll();
         List<ResponseUser> responseUsers = StreamSupport.stream(users.spliterator(), false)
                 .map(userEntity -> modelMapper.map(userEntity, ResponseUser.class))
@@ -61,7 +68,11 @@ public class UserController {
 
     @GetMapping("/health-check")
     public String status(@Value("${local.server.port}") String port) {
-        return String.format("It's Working in User Service on Port %s", port);
+        return "It's Working in User Service"
+                + ", port(local.server.port)=" + port
+                + ", port(server.port)=" + environment.getProperty("server.port")
+                + ", token secret=" + environment.getProperty("token.secret")
+                + ", token expiration time=" + environment.getProperty("token.expiration-time");
     }
 
     @GetMapping("/welcome")
