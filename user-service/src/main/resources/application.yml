@@ -33,7 +33,7 @@ greeting:
 
 logging:
   level:
-    com.ggyool.userservice: DEBUG
+    com.ggyool.userservice.client: DEBUG
 
 management:
   endpoints:

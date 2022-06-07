@@ -1,13 +1,12 @@
 package com.ggyool.userservice.service;
 
+import com.ggyool.userservice.client.OrderServiceClient;
 import com.ggyool.userservice.dto.UserDto;
 import com.ggyool.userservice.entity.UserEntity;
 import com.ggyool.userservice.entity.UserRepository;
-import com.ggyool.userservice.vo.ResponseOrder;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -16,9 +15,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -27,14 +26,16 @@ public class UserServiceImpl implements UserService {
     private final ModelMapper modelMapper;
     private final Environment env;
     private final RestTemplate restTemplate;
+    private final OrderServiceClient orderServiceClient;
 
     public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, ModelMapper modelMapper,
-                           Environment env, RestTemplate restTemplate) {
+                           Environment env, RestTemplate restTemplate, OrderServiceClient orderServiceClient) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.modelMapper = modelMapper;
         this.env = env;
         this.restTemplate = restTemplate;
+        this.orderServiceClient = orderServiceClient;
     }
 
     @Override
@@ -53,16 +54,21 @@ public class UserServiceImpl implements UserService {
         UserEntity userEntity = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         UserDto userDto = modelMapper.map(userEntity, UserDto.class);
-        String orderUrl = String.format(env.getProperty("order-service.url"), userId);
 
-        List<ResponseOrder> orderResponses = restTemplate.exchange(
-                orderUrl,
-                HttpMethod.GET,
-                null,
-                new ParameterizedTypeReference<List<ResponseOrder>>() {
-                }
-        ).getBody();
-        userDto.setOrders(orderResponses);
+
+        /* using RestTemplate */
+//        String orderUrl = String.format(env.getProperty("order-service.url"), userId);
+//        List<ResponseOrder> orderResponses = restTemplate.exchange(
+//                orderUrl,
+//                HttpMethod.GET,
+//                null,
+//                new ParameterizedTypeReference<List<ResponseOrder>>() {
+//                }
+//        ).getBody();
+
+        /* using FeignClient */
+        /* Exception handling with ErrorDecoder */
+        userDto.setOrders(orderServiceClient.getOrdersByUserId(userId));
         return userDto;
     }
 
